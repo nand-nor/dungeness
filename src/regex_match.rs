@@ -63,22 +63,22 @@ pub fn memoized_match(
 
     //Handle all possibilities for invalid accesses and be sure to return correct ansert in case
     // kleenes are in the final position or in the second position (will be rejected as invalid otherwise)
-    if pattern.len() > input.len() {
-        if row >= input.len() - 1 {
-            return true;
-        }
-    } else if input.len() > pattern.len() {
-        if row >= pattern.len() && pattern[pattern.len() - 1] == 0x2a {
-            if pattern[pattern.len() - 2] == 0x2e
-                || input[input.len() - 1] == pattern[pattern.len() - 2]
-            {
+
+    match pattern.len().cmp(&input.len()) {
+        std::cmp::Ordering::Greater => {
+            if row >= input.len() - 1 {
                 return true;
-            } else {
+            }
+        }
+        std::cmp::Ordering::Less => {
+            if row >= pattern.len() && pattern[pattern.len() - 1] == 0x2a {
+                return pattern[pattern.len() - 2] == 0x2e
+                    || input[input.len() - 1] == pattern[pattern.len() - 2];
+            } else if pattern[pattern.len() - 1] != 0x2a {
                 return false;
             }
-        } else if pattern[pattern.len() - 1] != 0x2a {
-            return false;
         }
+        _ => {}
     }
 
     match matrix[row][column] {
@@ -117,9 +117,10 @@ pub fn memoized_match(
         }
         Some(answer) => return answer,
     };
-    return res
+    res
 }
 
+#[allow(clippy::single_match, clippy::result_unit_err)]
 pub fn check_pattern_valid(pattern: String) -> Result<bool, ()> {
     check_len(pattern.len(), PATTERN_UPPER, LOWER)?;
     pattern
@@ -134,9 +135,9 @@ pub fn check_pattern_valid(pattern: String) -> Result<bool, ()> {
             }
         })?;
 
-    check_kleene_valid(pattern.clone())
+    check_kleene_valid(pattern)
 }
-
+#[allow(clippy::result_unit_err)]
 pub fn check_len(len: usize, upper: usize, lower: usize) -> Result<(), ()> {
     if lower <= len && upper >= len {
         return Ok(());
@@ -144,6 +145,7 @@ pub fn check_len(len: usize, upper: usize, lower: usize) -> Result<(), ()> {
     Err(())
 }
 
+#[allow(clippy::single_match, clippy::result_unit_err)]
 pub fn check_input_valid(input: String) -> Result<(), ()> {
     check_len(input.len(), INPUT_UPPER, LOWER)?;
     input
@@ -161,9 +163,10 @@ pub fn check_input_valid(input: String) -> Result<(), ()> {
 // Ensure that kleene star useage is valid given the contraints of the problem
 // Specifically, the problem states: "for each appearance of the character '*',
 // there will be a previous valid character to match." So check that this is true,
-//mostly just making sure there is no "**" substring in the pattern or a pattern of "*"
+// mostly just making sure there is no "**" substring in the pattern or a pattern of "*"
+#[allow(clippy::single_match, clippy::result_unit_err)]
 pub fn check_kleene_valid(pattern: String) -> Result<bool, ()> {
-    let mut bytes: Vec<u8> = pattern.bytes().map(|x| x).collect();
+    let mut bytes: Vec<u8> = pattern.bytes()./*map(|x| x).*/collect();
     let mut itr = bytes.iter_mut().multipeek();
     let mut first_itr = true;
     let mut has_kleene: bool = false;
@@ -179,12 +182,10 @@ pub fn check_kleene_valid(pattern: String) -> Result<bool, ()> {
                 }
                 _ => {}
             }
-        } else {
-            if first_itr {
-                match first {
-                    0x2a..=0x2a => return Err(()),
-                    _ => {}
-                }
+        } else if first_itr {
+            match first {
+                0x2a..=0x2a => return Err(()),
+                _ => {}
             }
         }
         first_itr = false;

@@ -1,4 +1,3 @@
-
 /* Make a generic trait for LC problem impls */
 
 pub trait Solution {
