@@ -1,24 +1,21 @@
 # Dungeness: Crabby Practice
 
-(Dungeness is a type of crab!)
+Practicing Rust and brushing up on old algorithms/problem solving approaches. Main
+focus is on graphs/DP, problem definitions pulled from LC with links where appropriate
+(Re: repo name, dungeness is a species of crab :) ) 
 
-Repo to practice DP and Graph problems with Rust! And possibly other problem types
-Problem definitions pulled from LC
+### [Regex Match](https://leetcode.com/problems/regular-expression-matching/)
 
-
-
-### Regex Match
-So far have only implemented regex match using DP/memoization approach. Added some
+####Status: 
+Have implemented regex match using DP/memoization approach. Added some
 niceties to reject invalid input before ever running them through the helper memo function.
-https://leetcode.com/problems/regular-expression-matching/
+Would like to also add in a graph impl and maybe for extra fun a finite automata approach?
 
-### Cheapest flights within k stops
+### [Maximum profit in job scheduling](https://leetcode.com/problems/maximum-profit-in-job-scheduling/)
+####Status:
+Have implemented using a memoized approach, some trivial test cases pass. Need to
+ensure that fail cases (bad input) return appropriately   
 
-https://leetcode.com/problems/cheapest-flights-within-k-stops/
+## TO DO
 
-### Set intersection size (at least two)
-https://leetcode.com/problems/set-intersection-size-at-least-two/
-
-### Maximum profit in job scheduling
-
-https://leetcode.com/problems/maximum-profit-in-job-scheduling/
+More DP! Possibly: [Set intersection size (at least two)](https://leetcode.com/problems/set-intersection-size-at-least-two/)
