@@ -1,28 +1,41 @@
+use crate::Solution;
 use std::boxed::Box;
 use std::cmp::max;
 
-/* LC problem: maximum profit in job scheduling
-* https://leetcode.com/problems/maximum-profit-in-job-scheduling/
-*/
+/// LC problem: maximum profit in job scheduling
+/// https://leetcode.com/problems/maximum-profit-in-job-scheduling/
+///
 
-pub struct JobSched<T: FnMut(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> {
+pub struct JobSched<T: Fn(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> {
     _fn_ptr: T,
 }
 
-use crate::problem::Solution;
-
-impl<T: FnMut(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> Solution for JobSched<T> {
+/// Solution trait impl for JobSched object
+///
+/// The function pointer provided to the solution is further defined
+/// below, using the Jobs struct object, jobs_scheduling, and Jobs methods
+///
+impl<T: Fn(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> Solution for JobSched<T> {
     type ProblemFunc = T;
     type ProblemArgs = (Vec<i32>, Vec<i32>, Vec<i32>);
     type ProblemSolution = i32;
-    fn solution(
-        mut problem: Box<Self::ProblemFunc>,
-        args: Self::ProblemArgs,
-    ) -> Self::ProblemSolution {
+    fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution {
         problem(args.0, args.1, args.2)
     }
 }
 
+pub struct Jobs {
+    pub start: Vec<i32>,
+    pub end: Vec<i32>,
+    pub profit: Vec<i32>,
+}
+
+/// The problem function signature as defined by LC spec
+///
+/// Takes three vectors of i32 and returns i32, using the Jobs struct and
+/// Jobs methods to return the greatest possible profit given a series of
+/// job schedules
+///
 pub fn job_scheduling(start: Vec<i32>, end: Vec<i32>, profit: Vec<i32>) -> i32 {
     let mut memo: Vec<i32> = vec![0; start.len()];
     //set the first index since we iterate from idx 1
@@ -33,33 +46,24 @@ pub fn job_scheduling(start: Vec<i32>, end: Vec<i32>, profit: Vec<i32>) -> i32 {
     job.job_schedule(&mut memo)
 }
 
-pub struct Jobs {
-    pub start: Vec<i32>,
-    pub end: Vec<i32>,
-    pub profit: Vec<i32>,
-}
-
 impl Jobs {
     fn job_schedule(&self, memo: &mut Vec<i32>) -> i32 {
         let len = self.start.len();
         for i in 1..len {
             let mut p = self.profit[i];
-            let mut idx = self.last_biggest_nonconflict(i);
-            while idx != -1 {
-                p += self.profit[idx as usize];
-                idx = self.last_biggest_nonconflict(idx as usize);
+            let mut idx = self.last_nonconflict(i);
+            while let Some(index) = idx {
+                p += self.profit[index];
+                idx = self.last_nonconflict(index);
             }
-
             memo[i] = max(p, memo[i - 1]);
         }
-
-        //  memo.sort();
         memo[memo.len() - 1]
     }
 
-    fn last_biggest_nonconflict(&self, index: usize) -> i32 {
+    fn last_nonconflict(&self, index: usize) -> Option<usize> {
         if index == 0 {
-            return -1;
+            return None;
         }
         for j in (0..=index - 1).rev() {
             let s1 = self.start[index];
@@ -72,52 +76,15 @@ impl Jobs {
             }
 
             if s1 >= e2 && e2 < e1 && s1 != s2 {
-                //if !(s1 < e2) && !(e2 >= e1) && !(s1 == s2) {
-
-                return j as i32;
+                return Some(j);
             }
         }
-        -1
+        None
     }
 }
 
-/* Assume input is already clean, get rid of checks
-pub const LENGTH_UPPER: i32 = 5 * 10 ^ 4;
-pub const TIME_UPPER: i32 = 10 ^ 9;
-pub const PROFIT_UPPER: i32 = 10 ^ 4;
-pub const LOWER: i32 = 1;
-
-fn check_valid_inputs(start: Vec<i32>, end: Vec<i32>, profit: Vec<i32>) -> Result<(), ()> {
-    if start.len() != end.len() && start.len() != profit.len() {
-        return Err(());
-    }
-    check_time_valid(start, end)?;
-    check_profit_valid(profit)?;
-    Ok(())
-}
-
-fn check_time_valid(start: Vec<i32>, end: Vec<i32>) -> Result<(), ()> {
-    let len = start.len();
-    for i in 0..len {
-        if start[i] < LOWER || start[i] >= end[i] || end[i] > TIME_UPPER {
-            return Err(());
-        }
-    }
-    Ok(())
-}
-
-fn check_profit_valid(profit: Vec<i32>) -> Result<(), ()> {
-    for amnt in profit {
-        if amnt < LOWER || amnt > PROFIT_UPPER {
-            return Err(());
-        }
-    }
-
-    Ok(())
-}
-*/
-
-//All example cases are pulled from LC
+/// All example test cases are pulled from LC
+/// Need to test more edge cases
 #[cfg(test)]
 mod tests {
     use super::*;

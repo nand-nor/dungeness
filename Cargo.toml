@@ -8,6 +8,11 @@ edition = "2021"
 [dependencies]
 itertools = "0.10.3"
 
-[[bin]]
-name="dp"
-path="src/bin/main.rs"
+
+[dev-dependencies]
+bencher = "0.1.5"
+
+[[bench]]
+name = "solutions"
+path = "benches/bench.rs"
+harness = false

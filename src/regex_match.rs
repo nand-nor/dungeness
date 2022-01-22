@@ -1,29 +1,26 @@
+use itertools::Itertools;
 use std::boxed::Box;
 
-use itertools::Itertools;
+use crate::Solution;
 
-/* LC problem: Regular Expression Matching
-* https://leetcode.com/problems/regular-expression-matching/
-*/
+/// LC problem: Regular Expression Matching
+/// https://leetcode.com/problems/regular-expression-matching/
+///
 
 pub const PATTERN_UPPER: usize = 30;
 pub const INPUT_UPPER: usize = 20;
 pub const LOWER: usize = 1;
 
-pub struct RegexMatch<T: FnMut(String, String) -> bool> {
+pub struct RegexMatch<T: Fn(String, String) -> bool> {
     _fn_ptr: T,
 }
-use crate::problem::Solution;
 
-impl<T: FnMut(String, String) -> bool> Solution for RegexMatch<T> {
+impl<T: Fn(String, String) -> bool> Solution for RegexMatch<T> {
     type ProblemFunc = T;
     type ProblemArgs = (String, String);
 
     type ProblemSolution = bool;
-    fn solution(
-        mut problem: Box<Self::ProblemFunc>,
-        args: Self::ProblemArgs,
-    ) -> Self::ProblemSolution {
+    fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution {
         problem(args.0, args.1)
     }
 }
@@ -197,8 +194,7 @@ pub fn check_kleene_valid(pattern: String) -> Result<bool, ()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    //use crate::regex_match::*;
-    //const VALID_PATTERN: &str = ".*";
+
     const INPUT_FAIL_CASE_NUM: usize = 7;
     const INPUT_FAIL_CASES: [(&str, &str); INPUT_FAIL_CASE_NUM] = [
         ("alakigifanchtheificdicic", ".*"),
