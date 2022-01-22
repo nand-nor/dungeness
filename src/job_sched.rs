@@ -1,22 +1,22 @@
 use std::boxed::Box;
 use std::cmp::max;
+use crate::Solution;
 
-/* LC problem: maximum profit in job scheduling
-* https://leetcode.com/problems/maximum-profit-in-job-scheduling/
-*/
+/// LC problem: maximum profit in job scheduling
+/// https://leetcode.com/problems/maximum-profit-in-job-scheduling/
+///
 
-pub struct JobSched<T: FnMut(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> {
+pub struct JobSched<T: Fn(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> {
     _fn_ptr: T,
 }
 
-use crate::problem::Solution;
 
-impl<T: FnMut(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> Solution for JobSched<T> {
+impl<T: Fn(Vec<i32>, Vec<i32>, Vec<i32>) -> i32> Solution for JobSched<T> {
     type ProblemFunc = T;
     type ProblemArgs = (Vec<i32>, Vec<i32>, Vec<i32>);
     type ProblemSolution = i32;
     fn solution(
-        mut problem: Box<Self::ProblemFunc>,
+        problem: Box<Self::ProblemFunc>,
         args: Self::ProblemArgs,
     ) -> Self::ProblemSolution {
         problem(args.0, args.1, args.2)
