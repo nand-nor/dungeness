@@ -6,7 +6,6 @@ mod graph;
 pub mod job_sched;
 pub mod regex_match;
 
-
 /// Trait for defining generic solution for LC problem impls
 ///
 /// Trait types allow the user to provide a function pointer,
@@ -39,24 +38,27 @@ pub trait Solution {
     fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution;
 }
 
-
-
-
 #[cfg(test)]
 mod tests {
-    use crate::regex_match::{RegexMatch, is_match};
-    use crate::job_sched::{JobSched, job_scheduling};
+    use crate::job_sched::{job_scheduling, JobSched};
+    use crate::regex_match::{is_match, RegexMatch};
     use crate::Solution;
+    // extern crate bencher;
+    // use bencher::Bencher;
+
     #[test]
-    fn solution_impl_test(){
+    fn solution_impl_test() {
         assert!(RegexMatch::solution(
             std::boxed::Box::new(is_match),
-            ("aaabbbccc".to_string(), ".*.*c*".to_string())));
+            ("aaabbbccc".to_string(), ".*.*c*".to_string())
+        ));
 
-        assert_eq!(JobSched::solution(
-            std::boxed::Box::new(job_scheduling),
-            (vec![1, 2, 3, 3], vec![3, 4, 5, 6], vec![50, 10, 40, 70]),
-        ), 120);
+        assert_eq!(
+            JobSched::solution(
+                std::boxed::Box::new(job_scheduling),
+                (vec![1, 2, 3, 3], vec![3, 4, 5, 6], vec![50, 10, 40, 70]),
+            ),
+            120
+        );
     }
-
 }

@@ -8,10 +8,9 @@
 /// some may be handled by having a function body of ```unimplemented!()```
 /// May at some point break these out into subtraits and have special ones for specific graph
 /// algorithm solutions for less common ones like topological sort or euler tour
-
 use crate::Solution;
 
-pub trait GraphSolution : Solution {
+pub trait GraphSolution: Solution {
     type GraphProblem;
     type GraphProblemArgs;
     type GraphProblemSolution;

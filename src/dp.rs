@@ -4,14 +4,12 @@
 /// arguments to said function, and a solution type. User must implement the Solution
 /// trait for whatever object this trait is implemented for
 ///
-
 use crate::Solution;
 
-pub trait DynProgSolution : Solution {
+pub trait DynProgSolution: Solution {
     type DynProgProblem;
     type DynProgProblemArgs;
     type DynProgProblemSolution;
-
 
     fn memo_solution(
         problem: Box<Self::DynProgProblem>,

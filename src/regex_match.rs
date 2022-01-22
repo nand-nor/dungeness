@@ -1,9 +1,7 @@
-
-use std::boxed::Box;
 use itertools::Itertools;
+use std::boxed::Box;
 
 use crate::Solution;
-
 
 /// LC problem: Regular Expression Matching
 /// https://leetcode.com/problems/regular-expression-matching/
@@ -22,10 +20,7 @@ impl<T: Fn(String, String) -> bool> Solution for RegexMatch<T> {
     type ProblemArgs = (String, String);
 
     type ProblemSolution = bool;
-    fn solution(
-        problem: Box<Self::ProblemFunc>,
-        args: Self::ProblemArgs,
-    ) -> Self::ProblemSolution {
+    fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution {
         problem(args.0, args.1)
     }
 }
@@ -199,8 +194,7 @@ pub fn check_kleene_valid(pattern: String) -> Result<bool, ()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    //use crate::regex_match::*;
-    //const VALID_PATTERN: &str = ".*";
+
     const INPUT_FAIL_CASE_NUM: usize = 7;
     const INPUT_FAIL_CASES: [(&str, &str); INPUT_FAIL_CASE_NUM] = [
         ("alakigifanchtheificdicic", ".*"),
