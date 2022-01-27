@@ -50,19 +50,20 @@ fn topdown_skyline_aux(b: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
                 //this is likely a good candidate for memoization-based improvement
                 if (b[i - 1][1] + b[i - 1][0]) > b[j][0] && b[i - 1][2] > b[j][2] {
                     let point = vec![b[i - 1][0], b[i - 1][2]];
+                    let next_point = vec![b[i - 1][1], b[j][2]];
 
-                    //TODO refactor this
+                    //prevent duplicate pushes
                     if points[points.len() - 1] != point {
                         points.push(point);
                     }
-                    let next_p = vec![b[i - 1][1], b[j][2]];
                     if points.len() > 2 {
-                        if points[points.len() - 1] != next_p && points[points.len() - 2] != next_p
+                        //prevent duplicate pushes
+                        if points[points.len() - 2] != next_point
                         {
-                            points.push(next_p);
+                            points.push(next_point);
                         }
                     } else {
-                        points.push(next_p);
+                        points.push(next_point);
                     }
                 }
             } else if last_overlap > b[i - 1][1] {
@@ -70,7 +71,6 @@ fn topdown_skyline_aux(b: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
             }
         }
 
-        //TODO refactor this
         if last_overlap == 0 {
             points.push(vec![b[i - 1][1], 0]);
             points.push(vec![b[i][0], b[i][2]]);
@@ -155,15 +155,17 @@ mod tests {
         assert_eq!(get_skyline(buildings), sol);
     }
 
-    /*
-        /// Check that nested buildings dont have points
-        #[test]
-        fn edge_case_nested_no_corners() {
-            let buildings: Vec<Vec<i32>> = vec![vec![0, 10, 10], vec![1, 3, 3], vec![5, 8, 6]];
+    /* Not sure this case actually meets problem spec-- the buildings that show up
+    in the Vec<Vec<i32>> would only be buildings that contribute to at least one
+    skyline point? Can we make that assumption? If not we need to add in a bunch of
+    checks to see if we are pushing a point that is subsumed by an existing point
+    /// Check that nested buildings dont have points
+    #[test]
+    fn edge_case_nested_no_corners() {
+        let buildings: Vec<Vec<i32>> = vec![vec![1, 10, 10], vec![2, 3, 3], vec![5, 8, 6]];
 
-            let sol: Vec<Vec<i32>> = vec![vec![0, 10], vec![10, 0]];
+        let sol: Vec<Vec<i32>> = vec![vec![1, 10], vec![10, 0]];
 
-            assert_eq!(get_skyline(buildings), sol);
-        }
-    */
+        assert_eq!(get_skyline(buildings), sol);
+    }*/
 }
