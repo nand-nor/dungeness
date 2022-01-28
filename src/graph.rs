@@ -15,10 +15,10 @@ pub trait GraphSolution: Solution {
     type GraphProblemArgs;
     type GraphProblemSolution;
 
-    fn solution(
+    /*fn solution(
         problem: Box<Self::GraphProblem>,
         args: Self::GraphProblemArgs,
-    ) -> Self::GraphProblemSolution;
+    ) -> Self::GraphProblemSolution;*/
 
     fn bfs_solution(
         problem: Box<Self::GraphProblem>,
@@ -30,4 +30,3 @@ pub trait GraphSolution: Solution {
         args: Self::GraphProblemArgs,
     ) -> Self::GraphProblemSolution;
 }
-

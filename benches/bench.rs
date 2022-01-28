@@ -4,6 +4,9 @@ extern crate bencher;
 
 use bencher::Bencher;
 
+use dungeness::cheapestk;
+use dungeness::cheapestk::CheapestFlight;
+use dungeness::graph::GraphSolution;
 use dungeness::job_sched;
 use dungeness::job_sched::JobSched;
 use dungeness::regex_match;
@@ -32,9 +35,52 @@ fn bench_job_schedule_problem(b: &mut Bencher) {
     });
 }
 
+fn bench_cheapestk_graph_bfs(b: &mut Bencher) {
+    let n = 3;
+    let src = 0;
+    let dst = 2;
+    let k = 1;
+
+    b.iter(|| {
+        bencher::black_box(CheapestFlight::bfs_solution(
+            std::boxed::Box::new(cheapestk::bfs_find_cheapest_price),
+            (
+                n,
+                vec![vec![0, 1, 100], vec![1, 2, 100], vec![0, 2, 500]],
+                src,
+                dst,
+                k,
+            ),
+        ))
+    });
+}
+
+fn bench_cheapestk_dp(b: &mut Bencher) {
+    let n = 3;
+    let src = 0;
+    let dst = 2;
+    let k = 1;
+
+    b.iter(|| {
+        bencher::black_box(<CheapestFlight<_> as Solution>::solution(
+            std::boxed::Box::new(cheapestk::find_cheapest_price),
+            (
+                n,
+                vec![vec![0, 1, 100], vec![1, 2, 100], vec![0, 2, 500]],
+                src,
+                dst,
+                k,
+            ),
+        ))
+    });
+
+}
+
 benchmark_group!(
     benches,
     bench_regex_match_problem,
-    bench_job_schedule_problem
+    bench_job_schedule_problem,
+    bench_cheapestk_graph_bfs,
+    bench_cheapestk_dp,
 );
 benchmark_main!(benches);
