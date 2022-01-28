@@ -7,6 +7,8 @@ pub mod cheapestk;
 pub mod job_sched;
 pub mod regex_match;
 pub mod skyline;
+pub mod stones;
+
 
 /// Trait for defining generic solution for LC problem impls
 ///
