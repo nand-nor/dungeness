@@ -5,7 +5,7 @@ mod graph;
 
 pub mod job_sched;
 pub mod regex_match;
-
+pub mod cheapestk;
 /// Trait for defining generic solution for LC problem impls
 ///
 /// Trait types allow the user to provide a function pointer,

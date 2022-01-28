@@ -30,3 +30,4 @@ pub trait GraphSolution: Solution {
         args: Self::GraphProblemArgs,
     ) -> Self::GraphProblemSolution;
 }
+
