@@ -4,25 +4,36 @@
 /// arguments to said function, and a solution type. User must implement the Solution
 /// trait for whatever object this trait is implemented for
 ///
-use crate::Solution;
 
-pub trait DynProgSolution: Solution {
-    type DynProgProblem;
+pub trait DynProgSolution {
     type DynProgProblemArgs;
     type DynProgProblemSolution;
 
-    fn memo_solution(
-        problem: Box<Self::DynProgProblem>,
+    fn memo_solution(&self,
         args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution;
+    ) -> Self::DynProgProblemSolution
+    where
+        Self: Sized;
 
-    fn bottomup_solution(
-        problem: Box<Self::DynProgProblem>,
+    fn bottomup_solution(&self,
         args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution;
+    ) -> Self::DynProgProblemSolution
+    where
+        Self: Sized;
 
-    fn topdown_solution(
-        problem: Box<Self::DynProgProblem>,
+    fn topdown_solution(&self,
         args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution;
+    ) -> Self::DynProgProblemSolution
+    where
+        Self: Sized;
 }
+
+pub trait CustomDynProgSolutionType {}
+
+pub enum DynProgSolutionType {
+    TOP,
+    BOTTOM,
+    MEMO,
+    CUSTOM(Box<dyn CustomDynProgSolutionType>),
+}
+

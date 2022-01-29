@@ -1,5 +1,5 @@
-use crate::graph::GraphSolution;
 use crate::dp::DynProgSolution;
+use crate::graph::{GraphSolution, GraphSolutionType};
 
 use crate::Solution;
 use std::boxed::Box;
@@ -10,8 +10,9 @@ use std::collections::VecDeque;
 /// https://leetcode.com/problems/cheapest-flights-within-k-stops/
 ///
 
-pub struct CheapestFlight<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> {
-    _fn_ptr: T,
+
+pub struct CheapestFlight<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32 + ?Sized> {
+    _fn_ptr: Box<T>,
 }
 
 impl<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> Solution for CheapestFlight<T> {
@@ -20,6 +21,14 @@ impl<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> Solution for CheapestFligh
     type ProblemSolution = i32;
     fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution {
         problem(args.0, args.1, args.2, args.3, args.4)
+    }
+}
+
+impl <T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32>CheapestFlight<T>{
+    pub fn new(t: T)->Self{
+        Self{
+            _fn_ptr: Box::new(t),
+        }
     }
 }
 
@@ -59,46 +68,38 @@ impl CheapestDP {
             }
         }
         if self.memo[k as usize + 1][dst as usize] != self.max {
-           self.memo[k as usize + 1][dst as usize]
+            self.memo[k as usize + 1][dst as usize]
         } else {
             -1
         }
     }
 }
 
-
 impl<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> DynProgSolution for CheapestFlight<T>
-        where
-            CheapestFlight<T>: Solution,
-    {
-    type DynProgProblem = T;
+where
+    CheapestFlight<T>: Solution,
+{
     type DynProgProblemArgs = (i32, Vec<Vec<i32>>, i32, i32, i32);
     type DynProgProblemSolution = i32;
 
-    fn memo_solution(
-        problem: Box<Self::DynProgProblem>,
+    fn memo_solution(&self,
         args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution{
-        problem(args.0, args.1, args.2, args.3, args.4)
+    ) -> Self::DynProgProblemSolution {
+        (self._fn_ptr)(args.0, args.1, args.2, args.3, args.4)
     }
 
-    fn bottomup_solution(
-        _problem: Box<Self::DynProgProblem>,
+    fn bottomup_solution(&self,
         _args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution{
+    ) -> Self::DynProgProblemSolution {
         unimplemented!();
-
     }
 
-    fn topdown_solution(
-        _problem: Box<Self::DynProgProblem>,
+    fn topdown_solution(&self,
         _args: Self::DynProgProblemArgs,
-    ) -> Self::DynProgProblemSolution{
+    ) -> Self::DynProgProblemSolution {
         unimplemented!();
     }
 }
-
-
 
 struct CheapestBFS {
     graph: Vec<Vec<bool>>, //adjacency matrix
@@ -115,7 +116,7 @@ impl CheapestBFS {
     fn new(n: i32, flights: Vec<Vec<i32>>, problem_src: i32) -> Self {
         let mut graph = vec![vec![false; n as usize]; n as usize];
         let mut queue = VecDeque::new();
-        for (idx, node) in graph.iter_mut().enumerate(){
+        for (idx, node) in graph.iter_mut().enumerate() {
             for (src, dst, price) in flights.iter().map(|node| (node[0], node[1], node[2])) {
                 if src as usize == idx {
                     node[dst as usize] = true;
@@ -169,30 +170,63 @@ impl CheapestBFS {
     }
 }
 
+use crate::{BenchSolution, SolutionForm};
+
+impl<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> SolutionForm for CheapestFlight<T> {
+    type ProblemSubtype = GraphSolutionType;
+    type ProblemFunc = T;
+    type ProblemArgs = (i32, Vec<Vec<i32>>, i32, i32, i32);
+    type ProblemSolution = i32;
+    fn do_solution<S: BenchSolution>(
+        &self,
+        form: &S,
+        subtype: Self::ProblemSubtype,
+        args: Self::ProblemArgs,
+    ) -> Self::ProblemSolution {
+
+        match subtype {
+            GraphSolutionType::BFS=>{
+                self.bfs_solution(args)
+            }
+            GraphSolutionType::DFS=>{
+                unimplemented!()
+            }
+            _=>{
+                unimplemented!()
+            }
+        }
+    }
+}
+
+#[derive(Default)]
+pub struct CheapestFlightWrap{}
+
+impl BenchSolution for CheapestFlightWrap{
+
+    type ProblemType = CheapestFlight<Box<dyn Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32>>;
+    type ProblemSubtype = GraphSolutionType;
+    type ProblemFunc = Box<dyn Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32>;
+    type ProblemArgs = (i32, Vec<Vec<i32>>, i32, i32, i32);
+    type ProblemSolution = i32;
+}
+
+
 impl<T: Fn(i32, Vec<Vec<i32>>, i32, i32, i32) -> i32> GraphSolution for CheapestFlight<T>
 where
     CheapestFlight<T>: Solution,
 {
-    type GraphProblem = T;
     type GraphProblemArgs = (i32, Vec<Vec<i32>>, i32, i32, i32);
     type GraphProblemSolution = i32;
 
-    /*fn solution(
-        problem: Box<Self::GraphProblem>,
-        args: Self::GraphProblemArgs,
-    ) -> Self::GraphProblemSolution {
-        problem(args.0, args.1, args.2, args.3, args.4)
-    }*/
-
     fn bfs_solution(
-        problem: Box<Self::GraphProblem>,
+        &self,
         args: Self::GraphProblemArgs,
     ) -> Self::GraphProblemSolution {
-        problem(args.0, args.1, args.2, args.3, args.4)
+        (self._fn_ptr)(args.0, args.1, args.2, args.3, args.4)
     }
 
     fn dfs_solution(
-        _problem: Box<Self::GraphProblem>,
+        &self,
         _args: Self::GraphProblemArgs,
     ) -> Self::GraphProblemSolution {
         unimplemented!();

@@ -9,7 +9,6 @@ pub mod regex_match;
 pub mod skyline;
 pub mod stones;
 
-
 /// Trait for defining generic solution for LC problem impls
 ///
 /// Trait types allow the user to provide a function pointer,
@@ -35,11 +34,48 @@ pub mod stones;
 ///
 /// ```
 pub trait Solution {
+    //type ProblemType: BenchSolution;
     type ProblemFunc;
     type ProblemArgs;
     type ProblemSolution;
 
     fn solution(problem: Box<Self::ProblemFunc>, args: Self::ProblemArgs) -> Self::ProblemSolution;
+}
+
+pub trait SolutionForm {
+    type ProblemSubtype;
+    type ProblemFunc;
+    type ProblemArgs;
+    type ProblemSolution;
+    fn do_solution<T: BenchSolution>(
+        &self,
+        form: &T,
+        subtype: Self::ProblemSubtype,
+     //   problem: Box<Self::ProblemFunc>,
+        args: Self::ProblemArgs,
+    ) -> Self::ProblemSolution;
+}
+
+pub trait BenchSolution: Sized {
+    type ProblemType: SolutionForm;
+    type ProblemSubtype;
+    type ProblemFunc;
+    type ProblemArgs;
+    type ProblemSolution;
+
+    fn bench_solution(
+        &self,
+        sol_type: Self::ProblemType,
+        sol_subtype: <<Self as BenchSolution>::ProblemType as SolutionForm>::ProblemSubtype,//Self::ProblemSubtype,
+      //  problem: Box<<<Self as BenchSolution>::ProblemType as SolutionForm>::ProblemFunc>,//Box<Self::ProblemFunc>,
+        args: <<Self as BenchSolution>::ProblemType as SolutionForm>::ProblemArgs,//Self::ProblemArgs,
+    ) -> <<Self as BenchSolution>::ProblemType as SolutionForm>::ProblemSolution//<Self as BenchSolution>::ProblemSolution
+    where
+        Self: Sized{
+            sol_type.do_solution(self, sol_subtype, /*problem,*/ args) // as <Self as BenchSolution>::ProblemSolution
+
+
+    }
 }
 
 #[cfg(test)]

@@ -58,8 +58,7 @@ fn topdown_skyline_aux(b: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
                     }
                     if points.len() > 2 {
                         //prevent duplicate pushes
-                        if points[points.len() - 2] != next_point
-                        {
+                        if points[points.len() - 2] != next_point {
                             points.push(next_point);
                         }
                     } else {

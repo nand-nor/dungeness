@@ -8,25 +8,31 @@
 /// some may be handled by having a function body of ```unimplemented!()```
 /// May at some point break these out into subtraits and have special ones for specific graph
 /// algorithm solutions for less common ones like topological sort or euler tour
-use crate::Solution;
 
-pub trait GraphSolution: Solution {
-    type GraphProblem;
+pub trait GraphSolution {
     type GraphProblemArgs;
     type GraphProblemSolution;
 
-    /*fn solution(
-        problem: Box<Self::GraphProblem>,
-        args: Self::GraphProblemArgs,
-    ) -> Self::GraphProblemSolution;*/
-
     fn bfs_solution(
-        problem: Box<Self::GraphProblem>,
+        &self,
         args: Self::GraphProblemArgs,
-    ) -> Self::GraphProblemSolution;
+    ) -> Self::GraphProblemSolution
+    where
+        Self: Sized;
 
     fn dfs_solution(
-        problem: Box<Self::GraphProblem>,
+        &self,
         args: Self::GraphProblemArgs,
-    ) -> Self::GraphProblemSolution;
+    ) -> Self::GraphProblemSolution
+    where
+        Self: Sized;
+}
+
+
+pub trait CustomGraphSolution {}
+
+pub enum GraphSolutionType {
+    BFS,
+    DFS,
+    OTHER(Box<dyn CustomGraphSolution>),
 }
